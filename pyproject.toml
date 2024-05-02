@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "fast-try"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.110.3"
+pydantic = "^2.7.1"
+pydantic-settings = "^2.2.1"
+sqlalchemy = "^2.0.29"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
