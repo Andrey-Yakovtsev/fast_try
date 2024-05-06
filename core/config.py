@@ -7,5 +7,4 @@ class Settings(BaseSettings):
     echo: bool = True
 
 
-
 settings = Settings()

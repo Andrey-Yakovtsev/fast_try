@@ -3,12 +3,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 import uvicorn
 
-from core.bd_helper import db_helper
+from core.repository import repo
 from core.models import Base
 from users.views import router as users_router
 
 async def create_db():
-    async with db_helper.engine.begin() as conn:
+    async with repo.engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
