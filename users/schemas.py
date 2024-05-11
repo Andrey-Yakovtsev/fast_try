@@ -1,4 +1,4 @@
-from typing import Optional, Annotated
+from typing import Annotated
 
 from annotated_types import MinLen, MaxLen
 from pydantic import BaseModel, ConfigDict
@@ -6,14 +6,14 @@ from pydantic import BaseModel, ConfigDict
 
 class BaseUserModel(BaseModel):
     name: str = Annotated[str, MinLen(3), MaxLen(10)]
-    fullname: str | None
+    fullname: str = Annotated[str, MinLen(3), MaxLen(10)]
 
 
 class CreateUser(BaseUserModel):
     ...
 
 
-class UserSchema(CreateUser):
+class UserSchema(BaseUserModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
 

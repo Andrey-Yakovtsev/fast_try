@@ -1,7 +1,7 @@
 import abc
 from abc import ABC
 from asyncio import current_task
-from typing import Sequence
+from typing import Sequence, Type
 
 from pydantic.main import Model
 from sqlalchemy import select, Result
@@ -36,38 +36,28 @@ class SQLAlchemyRepository(AbstractRepository):
             echo=echo,
             echo_pool=echo_pool
         )
-        self.session_factory = async_sessionmaker(
+        self.async_session = async_sessionmaker(
             bind=self.engine,
             autocommit=False,
             autoflush=False,
             expire_on_commit=False
         )
 
-    def scoped_session(self):
-        return async_scoped_session(session_factory=self.session_factory, scopefunc=current_task)
-
-    async def session_dependancy(self) -> AsyncSession:
-        async with self.session_factory() as session:
-            yield session
-            await session.close()
-
-    async def scoped_session_dependancy(self) -> AsyncSession:
-        session = self.scoped_session()
-        yield session
-        await session.close()
-
     async def get(self, model: Model, ref_id: int) -> Model | None:
-        # FIXME Как валидировать None при обработке несуществующего ключа?
-        return await self.scoped_session().get(model, ref_id)
+        async with self.async_session() as session:
+            result = await session.get(model, ref_id)
+        return result
 
-    async def add(self, obj: User) -> None:
-        # FIXME Туткак правильно тип подобрать для Обджа?
-        self.scoped_session().add(obj)
-        await self.scoped_session().commit()
+    async def add(self, obj: Type[Model]) -> None:
+        async with self.async_session() as session:
+            session.add(obj)
+            await session.commit()
+            await session.refresh(obj)
 
-    async def list(self, model: Model) -> Sequence[Model]:
+    async def list(self, model: Model) -> Sequence[Type[Model]]:
         stmt = select(model).order_by(model.id)
-        result: Result = await self.scoped_session().execute(stmt)
+        async with self.async_session() as session:
+            result: Result = await session.execute(stmt)
         return result.scalars().all()
 
 

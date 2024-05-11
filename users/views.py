@@ -18,14 +18,14 @@ async def list_users():
 
 
 @router.post("/", response_model=UserSchema)
-async def create_users(user: UserSchema):
-    user = await crud.create_user(user_in=user)
-    if user:
-        return user
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+async def create_users(user: CreateUser):
+    return await crud.create_user(user_in=user)
 
 
 @router.get("/{user_id}/", response_model=UserSchema)
 async def get_single_user(user_id: int):
-    return await crud.get_user(model=Type[User], user_id=user_id)
+    user = await crud.get_user(model=User, user_id=user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return user
 
