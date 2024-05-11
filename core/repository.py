@@ -30,10 +30,11 @@ class AbstractRepository(ABC):
 
 
 class SQLAlchemyRepository(AbstractRepository):
-    def __init__(self, url: str, echo: bool = False):
+    def __init__(self, url: str, echo: bool = False, echo_pool: bool = False) -> None:
         self.engine = create_async_engine(
             url=url,
-            echo=echo
+            echo=echo,
+            echo_pool=echo_pool
         )
         self.session_factory = async_sessionmaker(
             bind=self.engine,
@@ -70,4 +71,4 @@ class SQLAlchemyRepository(AbstractRepository):
         return result.scalars().all()
 
 
-repo = SQLAlchemyRepository(url=settings.db_url, echo=settings.echo)
+repo = SQLAlchemyRepository(url=settings.db_url, echo=settings.echo, echo_pool=settings.echo_pool)
