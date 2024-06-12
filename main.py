@@ -6,6 +6,7 @@ import uvicorn
 from core.repository import repo
 from core.models import Base
 from users.views import router as users_router
+from adresses.views import router as addrs_router
 
 async def create_db():
     async with repo.engine.begin() as conn:
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(users_router)
+app.include_router(addrs_router)
 
 
 

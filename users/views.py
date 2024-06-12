@@ -1,10 +1,7 @@
-from typing import Type
 
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, HTTPException
 from starlette import status
 
-from core.repository import repo
 from core.models import User
 from users import crud
 from users.schemas import CreateUser, UserSchema
